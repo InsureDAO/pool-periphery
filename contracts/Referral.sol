@@ -5,6 +5,8 @@ import "@insuredao/pool-contracts/contracts/interfaces/IOwnership.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Referral {
+    event Rebate(address indexed referrer, address indexed pool, uint256 rebate);
+    event setMaxRebateRate(address pool, uint256 maxRebateRate);
 
     mapping(address => uint256) public maxRebateRates;
 
@@ -69,10 +71,12 @@ contract Referral {
         uint256 _rebate = IERC20(usdc).balanceOf(address(this));
         uint256 _lp = IPoolTemplate(_pool).deposit(_rebate);
         IERC20(_pool).transfer(_referrer, _lp);
+
+        emit Rebate(_referrer, _pool, _rebate);
     }
 
     
-    function getMaxRebateRate(address _pool)external{
+    function getMaxRebateRate(address _pool)external view{
         return _getMaxRebateRate(_pool);
     }
 
@@ -88,5 +92,7 @@ contract Referral {
 
     function setMaxRebateRate(address _pool, uint256 _maxRebateRate)external onlyOwner{
         maxRebateRates[_pool] = _maxRebateRate;
+
+        emit setMaxRebateRate(_pool, _maxRebateRate);
     }
 }
