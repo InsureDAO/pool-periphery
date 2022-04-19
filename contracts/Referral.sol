@@ -1,28 +1,41 @@
 pragma solidity 0.8.13;
 
 import "@insuredao/pool-contracts/contracts/interfaces/IPoolTemplate.sol";
-import "@insuredao/pool-contracts/contracts/interfaces/IRegistry.sol";
+import "@insuredao/pool-contracts/contracts/interfaces/IOwnership.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Referral {
 
-    mapping(address => uint256) public rebates;
-    mapping(address => uint256) public lps;
+    mapping(address => uint256) public maxRebateRates;
 
-    mapping(address => bool) private pools;
-
-    IRegistry public registry;
-    address immutable public usdc;
-
-    uint256 public maxRebateRate;
+    address public immutable ownership;
+    address public immutable usdc;
     uint256 private constant RATE_DENOMINATOR = 1000000;
 
-
-    constructor(address _registry, address _usdc){
-        registry = IRegistry(_registry);
-        usdc = _usdc;
+    modifier onlyOwner() {
+        require(
+            IOwnership(ownership).owner() == msg.sender,
+            "Caller is not allowed to operate"
+        );
+        _;
     }
 
+    constructor(address _usdc, address _ownership, address _vault, uint256 _defaultMaxRebateRate){
+        require(_usdc != address(0), "zero address");
+        require(_ownership != address(0), "zero address");
+        require(_vault != address(0), "zero address");
+        require(_defaultMaxRebateRate != 0, "zero");
+
+        usdc = _usdc;
+        ownership = _ownership;
+        IERC20(usdc).approve(_vault, type(uint256).max);
+
+        maxRebateRates[address(0)] = _defaultMaxRebateRate;
+    }
+
+    /**
+    * @notice
+    */
     function insure(
         address _pool,
         address _referrer,
@@ -35,24 +48,14 @@ contract Referral {
         address _for,
         address _agent
     )external{
-        require(registry.isListed(_pool), "invalid pool");
-        require(_rebateRate <= maxRebateRate, "exceed max rabate rate");
+        require(_rebateRate <= _getMaxRebateRate(_pool), "exceed max rabate rate");
 
-        //get premium + calc rebate
+        //transfer premium
         uint256 _premium = IPoolTemplate(_pool).getPremium(_amount, _span);
         _premium += _premium * _rebateRate / RATE_DENOMINATOR;
-
-
-        //transfer USDC from msg.sender to here
         IERC20(usdc).transferFrom(msg.sender, address(this), _premium);
 
-        if(!pools[_pool]){
-           IERC20(usdc).approve(_pool, type(uint256).max);
-        }
-
-        uint256 totalBefore = IERC20(_pool).balanceOf(address(this));
-
-        //insure()
+        //buy insurance
         IPoolTemplate(_pool).insure(
             _amount,
             _maxCost,
@@ -62,49 +65,28 @@ contract Referral {
             _agent
         );
 
-        //take USDC diff and sub from transferred USDC. this is actual rebate.
-        uint256 totalAfter = IERC20(_pool).balanceOf(address(this));
-        unchecked {
-            uint256 rebate = totalBefore - totalAfter;
-        }
-
-        //increment referrer
-        rebates[_referrer] += rebate;
+        //deposit actual rebate, then transfer LP token to referrer
+        uint256 _rebate = IERC20(usdc).balanceOf(address(this));
+        uint256 _lp = IPoolTemplate(_pool).deposit(_rebate);
+        IERC20(_pool).transfer(_referrer, _lp);
     }
 
-
-    function deposit(address _pool, uint256 _amount)external{
-        require(registry.isListed(_pool), "invalid pool");
-        require(rebates[msg.sender] >= _amount, "insufficient balance");
-
-        uint256 _mint = IPoolTemplate(_pool).deposit(_amount);
-
-        unchecked{
-            rebates[msg.sender] -= _amount;
-            lps[msg.sender] += _mint; //can underflow
-        }
-        
-    }
-
-    /**
-    * @dev requestWithdraw can be done only once per pool within the entire withdraw period.
-    * option1. waiting list
-    * option2. 
-    *
-    */
-    function requestWithdraw()external{
-        require(registry.isListed(_pool), "invalid pool");
-
-    }
-
-    function withdraw()external{
-        require(registry.isListed(_pool), "invalid pool");
-
-    }
-
-    function withdrawRebate()external{
-        require(registry.isListed(_pool), "invalid pool");
-
-    }
     
+    function getMaxRebateRate(address _pool)external{
+        return _getMaxRebateRate(_pool);
+    }
+
+    function _getMaxRebateRate(address _pool)internal view returns(uint256){
+        uint256 _maxRebateRate = maxRebateRates[_pool];
+
+        if (_maxRebateRate == 0) {
+            return maxRebateRates[address(0)];
+        } else {
+            return _maxRebateRate;
+        }
+    }
+
+    function setMaxRebateRate(address _pool, uint256 _maxRebateRate)external onlyOwner{
+        maxRebateRates[_pool] = _maxRebateRate;
+    }
 }
