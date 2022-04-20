@@ -1,12 +1,21 @@
-pragma solidity 0.8.13;
+pragma solidity 0.8.10;
 
 import "@insuredao/pool-contracts/contracts/interfaces/IPoolTemplate.sol";
 import "@insuredao/pool-contracts/contracts/interfaces/IOwnership.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
+import "hardhat/console.sol";
+
+/**
+ * @title Referral
+ * @author @InsureDAO
+ * @notice Buy Insurance with referral
+ * SPDX-License-Identifier: GPL-3.0
+ */
+
 contract Referral {
     event Rebate(address indexed referrer, address indexed pool, uint256 rebate);
-    event setMaxRebateRate(address pool, uint256 maxRebateRate);
+    event SetMaxRebateRate(address pool, uint256 maxRebateRate);
 
     mapping(address => uint256) public maxRebateRates;
 
@@ -15,14 +24,16 @@ contract Referral {
     uint256 private constant RATE_DENOMINATOR = 1000000;
 
     modifier onlyOwner() {
-        require(
-            IOwnership(ownership).owner() == msg.sender,
-            "Caller is not allowed to operate"
-        );
+        require(IOwnership(ownership).owner() == msg.sender, "Caller is not allowed to operate");
         _;
     }
 
-    constructor(address _usdc, address _ownership, address _vault, uint256 _defaultMaxRebateRate){
+    constructor(
+        address _usdc,
+        address _ownership,
+        address _vault,
+        uint256 _defaultMaxRebateRate
+    ) {
         require(_usdc != address(0), "zero address");
         require(_ownership != address(0), "zero address");
         require(_vault != address(0), "zero address");
@@ -36,51 +47,43 @@ contract Referral {
     }
 
     /**
-    * @notice
-    */
+     * @notice
+     */
     function insure(
         address _pool,
         address _referrer,
         uint256 _rebateRate,
-
         uint256 _amount,
         uint256 _maxCost,
         uint256 _span,
         bytes32 _target,
         address _for,
         address _agent
-    )external{
+    ) external {
         require(_rebateRate <= _getMaxRebateRate(_pool), "exceed max rabate rate");
 
         //transfer premium
         uint256 _premium = IPoolTemplate(_pool).getPremium(_amount, _span);
-        _premium += _premium * _rebateRate / RATE_DENOMINATOR;
+        _premium += (_premium * _rebateRate) / RATE_DENOMINATOR;
         IERC20(usdc).transferFrom(msg.sender, address(this), _premium);
 
         //buy insurance
-        IPoolTemplate(_pool).insure(
-            _amount,
-            _maxCost,
-            _span,
-            _target,
-            _for,
-            _agent
-        );
+        IPoolTemplate(_pool).insure(_amount, _maxCost, _span, _target, _for, _agent);
 
         //deposit actual rebate, then transfer LP token to referrer
         uint256 _rebate = IERC20(usdc).balanceOf(address(this));
+
         uint256 _lp = IPoolTemplate(_pool).deposit(_rebate);
         IERC20(_pool).transfer(_referrer, _lp);
 
         emit Rebate(_referrer, _pool, _rebate);
     }
 
-    
-    function getMaxRebateRate(address _pool)external view{
+    function getMaxRebateRate(address _pool) external view returns (uint256) {
         return _getMaxRebateRate(_pool);
     }
 
-    function _getMaxRebateRate(address _pool)internal view returns(uint256){
+    function _getMaxRebateRate(address _pool) internal view returns (uint256) {
         uint256 _maxRebateRate = maxRebateRates[_pool];
 
         if (_maxRebateRate == 0) {
@@ -90,9 +93,9 @@ contract Referral {
         }
     }
 
-    function setMaxRebateRate(address _pool, uint256 _maxRebateRate)external onlyOwner{
+    function setMaxRebateRate(address _pool, uint256 _maxRebateRate) external onlyOwner {
         maxRebateRates[_pool] = _maxRebateRate;
 
-        emit setMaxRebateRate(_pool, _maxRebateRate);
+        emit SetMaxRebateRate(_pool, _maxRebateRate);
     }
 }
