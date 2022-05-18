@@ -48,6 +48,17 @@ contract Referral {
 
     /**
      * @notice
+     * @param _pool Address of the insurance pool
+     * @param _referrer Address where the rabate goes
+     * @param _rebateRate Rate of the rebate.(1e6 = 100%) Maximum rate set to 10% as default.
+     *
+     * // Following params are same as PoolTemplate:insure()
+     * @param _amount .
+     * @param _maxCost .
+     * @param _span .
+     * @param _target .
+     * @param _for .
+     * @param _agent .
      */
     function insure(
         address _pool,

@@ -23,11 +23,24 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 // Go to https://hardhat.org/config/ to learn more
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.10",
+  solidity: {
+    version: "0.8.10",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200000,
+      },
+    },
+  },
   networks: {
     shibuya: {
       url: process.env.SHIBUYA_URL,
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+    },
+    astar: {
+      url: process.env.ASTAR_URL,
+      accounts: process.env.PRODUCTION_KEY !== undefined ? [process.env.PRODUCTION_KEY] : [],
+      gasPrice: 3e9, //3Gwei
     },
   },
   gasReporter: {
