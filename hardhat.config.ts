@@ -40,7 +40,12 @@ const config: HardhatUserConfig = {
     astar: {
       url: process.env.ASTAR_URL,
       accounts: process.env.PRODUCTION_KEY !== undefined ? [process.env.PRODUCTION_KEY] : [],
-      gasPrice: 3e9, //3Gwei
+      gasPrice: 3e9, // 3Gwei
+    },
+    goerli: {
+      url: process.env.GOERLI_URL,
+      accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      gasPrice: 3e9, // 3Gwei
     },
   },
   gasReporter: {

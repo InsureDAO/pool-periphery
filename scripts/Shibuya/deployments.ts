@@ -1,14 +1,14 @@
-const USDCAddress = "0x178e56d3e3961210d5760bb8125b64c9661a3428";
-const OwnershipAddress = "0x2051Ec11ca029DF3C09eCb3855EeCcB98D3C1433";
-const RegistryAddress = "0x55478DD610e3d0f31238E6C47CBD2fa74549e7Ba";
-const FactoryAddress = "0xCaFC83043BDfb2359DC6bc48c9A96C50A9Af9bE5";
-const PremiumModelAddress = "0x19deD1F547947dE7367A8264cD76CFa7d9702BC0";
-const ParametersAddress = "0x2CeE0019b7aeE5d3A5F1db141f0f2F7769d021EA";
-const VaultAddress = "0xd48C923681a9DEC5CE1F032C2204c0fcFDc2C0B0";
+const USDCAddress = "0x8921bCD73e1465593942a1473d4Ae83898a6B8DA";
+const OwnershipAddress = "0xba6618BB4c6Ac8Ae2E5e288ff4ff227888974f18";
+const RegistryAddress = "0x805A5A4F43350Fe0505E9c7835ccb801C1ECa15c";
+const FactoryAddress = "0xe01A16867D11b2153c9ad96e567cDC42508EEbE3";
+const PremiumModelAddress = "0xE8B0CA1daee4c82aE1b7f431359F2505B63e13Db";
+const ParametersAddress = "0x82b37d747494Ed1A8b02a16a7B07dA056c8E36B0";
+const VaultAddress = "0x05530892C3E6c02bd1c19a87E0756e7D92812d67";
 
-const PoolTemplateAddress = "0xDF95eEFea6F322742c64D05AEC124a334C1557BA";
+const PoolTemplateAddress = "0x88d779570A2f3bfE0e9A3ea9318413Cce7B08F80";
 
-const Pools = ["0x46c08576bf9c5E821780F24812817b809ba65D80"];
+const Pools = ["0x861709923ed452199B13aF4f9898939841b93f37"];
 
 export {
   USDCAddress,

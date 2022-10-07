@@ -4,8 +4,6 @@ import "@insuredao/pool-contracts/contracts/interfaces/IPoolTemplate.sol";
 import "@insuredao/pool-contracts/contracts/interfaces/IOwnership.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import "hardhat/console.sol";
-
 /**
  * @title Referral
  * @author @InsureDAO
