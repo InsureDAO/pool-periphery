@@ -14,6 +14,7 @@ async function main() {
   // define
   const Referral = await ethers.getContractFactory("Referral");
   const referral = await Referral.deploy(USDC_ADDRESS, OwnershipAddress, VaultAddress, defaultMaxRebateRate);
+  await referral.deployed();
 
   console.log("Referral deployed to:", referral.address);
 

@@ -6,18 +6,19 @@ function delay(ms: number) {
 }
 
 async function main() {
-  const USDC_ADDRESS = "0xf1485Aa729DF94083ab61B2C65EeA99894Aabdb3";
-  const OwnershipAddress = "0x7D5A12D2d1F9CCbDfd3eC16F8156B2Dc0dB2EB8A";
-  const VaultAddress = "0x0666Ff78b8785Fa495D1c33E3CBCFACB2fd6da00";
+  const USDC_ADDRESS = "0xA2025B15a1757311bfD68cb14eaeFCc237AF5b43";
+  const OwnershipAddress = "0x2D78C205955154Fe58beb123ACE93A8aDca86dBC";
+  const VaultAddress = "0x39c04722F1030ACe40d98546883BfB8f919fc837";
   const defaultMaxRebateRate = "100000";
 
   // define
   const Referral = await ethers.getContractFactory("Referral");
   const referral = await Referral.deploy(USDC_ADDRESS, OwnershipAddress, VaultAddress, defaultMaxRebateRate);
+  await referral.deployed();
 
   console.log("Referral deployed to:", referral.address);
 
-  await delay(30000);
+  await delay(30000); // wait for etherscan to register the bytecode
 
   try {
     await run("verify:verify", {

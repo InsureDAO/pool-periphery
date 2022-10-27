@@ -73,6 +73,7 @@ const config: HardhatUserConfig = {
   etherscan: {
     apiKey: {
       mainnet: `${process.env.ETHERSCAN_API}`,
+      goerli: `${process.env.ETHERSCAN_API}`,
       optimisticEthereum: `${process.env.OPT_ETHERSCAN_API}`,
       optimisticGoerli: `${process.env.OPT_ETHERSCAN_API}`,
       arbitrumGoerli: `${process.env.ARB_ETHERSCAN_API}`,
