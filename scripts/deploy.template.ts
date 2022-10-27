@@ -17,7 +17,7 @@ async function main() {
 
   console.log("Referral deployed to:", referral.address);
 
-  await delay(30000); // wait for optimism-scan to register the bytecode
+  await delay(30000); // wait for etherscan to register the bytecode
 
   try {
     await run("verify:verify", {
