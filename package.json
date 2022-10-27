@@ -1,5 +1,16 @@
 {
-  "name": "hardhat-project",
+  "name": "@insuredao/pool-periphery",
+  "scripts": {
+    "compile": "npx hardhat compile",
+    "test:hardhat": "npx hardhat test",
+    "test:forge": "forge test -vvv --watch",
+    "cov:forge": "source scripts/test/check-coverage.sh",
+    "prepare": "husky install",
+    "deploy:goerli": "NETWORK=goerli ./deploy.sh",
+    "deploy:optimisticGoerli": "NETWORK=optimisticGoerli ./deploy.sh",
+    "deploy:arbitrumGoerli": "NETWORK=arbitrumGoerli ./deploy.sh",
+    "deploy:local": "NETWORK=hardhat ./deploy.sh"
+  },
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.5",
     "@nomiclabs/hardhat-etherscan": "^3.0.3",
@@ -24,6 +35,7 @@
     "ethers": "^5.6.4",
     "hardhat": "^2.9.3",
     "hardhat-gas-reporter": "^1.0.8",
+    "mustache": "^4.2.0",
     "prettier": "^2.6.2",
     "prettier-plugin-solidity": "^1.0.0-beta.13",
     "solhint": "^3.3.7",
