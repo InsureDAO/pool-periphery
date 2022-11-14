@@ -6,9 +6,9 @@ function delay(ms: number) {
 }
 
 async function main() {
-  const USDC_ADDRESS = "0xA2025B15a1757311bfD68cb14eaeFCc237AF5b43";
-  const OwnershipAddress = "0x2D78C205955154Fe58beb123ACE93A8aDca86dBC";
-  const VaultAddress = "0x39c04722F1030ACe40d98546883BfB8f919fc837";
+  const USDC_ADDRESS = "0x7F5c764cBc14f9669B88837ca1490cCa17c31607";
+  const OwnershipAddress = "0x7dF2501C62b56f8dd5F1644bfC4300A517CE22BC";
+  const VaultAddress = "0x54F23d2fdC1E17D349B1Eb14d869fa4deD6A6D2b";
   const defaultMaxRebateRate = "100000";
 
   // define
